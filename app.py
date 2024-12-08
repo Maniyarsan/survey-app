@@ -3,11 +3,26 @@ from flask_sqlalchemy import SQLAlchemy
 import os
 import matplotlib.pyplot as plt
 import pandas as pd
+import psycopg2
+
+try:
+    conn = psycopg2.connect(
+        dbname="survey_cxxa",
+        user="root",
+        password="TW9SU6LvAIsumDLj7inc7nojHtnAXXRH",
+        host="dpg-ctaq4ubtq21c73c741bg-a",
+        port="5432"
+    )
+    print("Connection successful!")
+    conn.close()
+except Exception as e:
+    print(f"Error: {e}")
+
 
 app = Flask(__name__)
 
 # PostgreSQL database URL (replace with your own connection string)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://survey_app_o027_user:fen28ULl82ePmSJuMBE0DpffYYW6ZlRr@dpg-ctakkg0gph6c73epkvhg-a.oregon-postgres.render.com/survey_app_o027'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://root:TW9SU6LvAIsumDLj7inc7nojHtnAXXRH@dpg-ctaq4ubtq21c73c741bg-a.oregon-postgres.render.com/survey_cxxa'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -19,9 +34,8 @@ class Response(db.Model):
     question2 = db.Column(db.String(255), nullable=False)
     question3 = db.Column(db.String(255), nullable=False)
 
-# Initialize database schema
-@app.before_first_request
-def create_tables():
+# Initialize database schema at startup
+with app.app_context():
     db.create_all()
 
 @app.route('/')
@@ -58,3 +72,4 @@ def admin():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
